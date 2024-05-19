@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Результат прогноза</title>
+    <link rel="stylesheet" href="{% static 'css/all_style.css' %}">
+    <!-- Подключаем библиотеку для построения графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: auto;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        td{
+            color: blue;
+        }
+        .yes {
+            color: green;
+        }
+        .no {
+            color: red;
+        }
+         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        p {
+            text-align: center;
+            margin: 20px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 30px auto;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #charts-container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+<button onclick="window.history.back();">Вернуться назад</button>
+<h1>Результат прогноза</h1>
+<h2>Прогноз эффективности артефакта "<span style="color:blue;">{{forecast_data.artefact}}</span>" : для месяца <span style="color:blue;">{{forecast_data.month}}</span></h2>
+<p>{{ result.success_probability }}%</p>
+<h2>Коэфициент сезонности для прогнозируемого месяца: </h2>
+<p>{{ result.seasonal_koef }}</p>
+
+<h2>Индикаторы для показателей</h2>
+<table>
+    <tr>
+        <th></th>
+        <th>Сезонность</th>
+        <th>Стабильность роста</th>
+        <th>Согласованность между мат. методами</th>
+        <th>Динамика изменения значений Экспоненциального сглаживания</th>
+    </tr>
+    <tr>
+        <td><b>Прибыль</b></td>
+        <td class="{% if net_profit_indicators.0 == 1 %}yes{% else %}no{% endif %}">{% if net_profit_indicators.0 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if net_profit_indicators.1 == 1 %}yes{% else %}no{% endif %}">{% if net_profit_indicators.1 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if net_profit_indicators.2 == 1 %}yes{% else %}no{% endif %}">{% if net_profit_indicators.2 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if net_profit_indicators.3 == 1 %}yes{% else %}no{% endif %}">{% if net_profit_indicators.3 == 1 %}Да{% else %}Нет{% endif %}</td>
+    </tr>
+    <tr>
+        <td><b>Рентабельность</b></td>
+        <td class="{% if profitability_indicators.0 == 1 %}yes{% else %}no{% endif %}">{% if profitability_indicators.0 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if profitability_indicators.1 == 1 %}yes{% else %}no{% endif %}">{% if profitability_indicators.1 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if profitability_indicators.2 == 1 %}yes{% else %}no{% endif %}">{% if profitability_indicators.2 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if profitability_indicators.3 == 1 %}yes{% else %}no{% endif %}">{% if profitability_indicators.3 == 1 %}Да{% else %}Нет{% endif %}</td>
+    </tr>
+    <tr>
+        <td><b>Операционные расходы</b></td>
+        <td class="{% if operating_expenses_indicators.0 == 1 %}yes{% else %}no{% endif %}">{% if operating_expenses_indicators.0 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if operating_expenses_indicators.1 == 1 %}yes{% else %}no{% endif %}">{% if operating_expenses_indicators.1 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if operating_expenses_indicators.2 == 1 %}yes{% else %}no{% endif %}">{% if operating_expenses_indicators.2 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if operating_expenses_indicators.3 == 1 %}yes{% else %}no{% endif %}">{% if operating_expenses_indicators.3 == 1 %}Да{% else %}Нет{% endif %}</td>
+    </tr>
+    <tr>
+        <td><b>Клиентская база</b></td>
+        <td class="{% if customer_base_indicators.0 == 1 %}yes{% else %}no{% endif %}">{% if customer_base_indicators.0 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if customer_base_indicators.1 == 1 %}yes{% else %}no{% endif %}">{% if customer_base_indicators.1 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if customer_base_indicators.2 == 1 %}yes{% else %}no{% endif %}">{% if customer_base_indicators.2 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if customer_base_indicators.3 == 1 %}yes{% else %}no{% endif %}">{% if customer_base_indicators.3 == 1 %}Да{% else %}Нет{% endif %}</td>
+    </tr>
+    <tr>
+        <td><b>Количество сотрудников</b></td>
+        <td class="{% if employee_count_indicators.0 == 1 %}yes{% else %}no{% endif %}">{% if employee_count_indicators.0 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if employee_count_indicators.1 == 1 %}yes{% else %}no{% endif %}">{% if employee_count_indicators.1 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if employee_count_indicators.2 == 1 %}yes{% else %}no{% endif %}">{% if employee_count_indicators.2 == 1 %}Да{% else %}Нет{% endif %}</td>
+        <td class="{% if employee_count_indicators.3 == 1 %}yes{% else %}no{% endif %}">{% if employee_count_indicators.3 == 1 %}Да{% else %}Нет{% endif %}</td>
+    </tr>
+
+    </table>
+<button id="showChartsButton">Показать/Скрыть диаграммы мат. методов</button>
+<!-- Добавляем контейнер для графика -->
+<div id="charts-container" style="display: none;">
+    <h2>Прибыль</h2>
+    <canvas id="myChart1"></canvas>
+    <canvas id="myChart2"></canvas>
+    <h2>Рентабельность</h2>
+    <canvas id="myChart3"></canvas>
+    <canvas id="myChart4"></canvas>
+    <h2>Операционные расходы</h2>
+    <canvas id="myChart5"></canvas>
+    <canvas id="myChart6"></canvas>
+    <h2>Клиентская база</h2>
+    <canvas id="myChart7"></canvas>
+    <canvas id="myChart8"></canvas>
+    <h2>Количество сотрудников</h2>
+    <canvas id="myChart9"></canvas>
+    <canvas id="myChart10"></canvas>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Получаем данные из контекста Django и используем их напрямую
+        var cc_net_profit = {{ cc_net_profit }};
+        var ec_net_profit = {{ ec_net_profit }};
+        var cc_profitability = {{ cc_profitability }};
+        var ec_profitability = {{ ec_profitability }};
+        var cc_operating_expenses = {{ cc_operating_expenses }};
+        var ec_operating_expenses = {{ ec_operating_expenses }};
+        var cc_customer_base = {{ cc_customer_base }};
+        var ec_customer_base = {{ ec_customer_base }};
+        var cc_employee_count = {{ cc_employee_count }};
+        var ec_employee_count = {{ ec_employee_count }};
+
+        const showChartsButton = document.getElementById('showChartsButton');
+        const chartsContainer = document.getElementById('charts-container');
+
+        showChartsButton.addEventListener('click', function() {
+                if (chartsContainer.style.display === 'none') {
+                    chartsContainer.style.display = 'block';
+                } else {
+                   chartsContainer.style.display = 'none';
+                }
+        });
+
+
+        // Получаем контейнер для графиков
+        var container = document.getElementById('charts-container');
+
+        // Функции для создания графиков
+        function createChartCC(data, label, index) {
+            var canvas = document.getElementById('myChart' + index);
+            var ctx = canvas.getContext('2d');
+            return new Chart(ctx, {
+                type: 'bar', // Используем тип 'bar' для горизонтальных столбцов
+                data: {
+                    labels: Array.from({length: data.length}, (_, i) => 'СС значение ' + (i + 1)),
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)', // Цвет столбцов синий
+                        borderColor: 'rgba(54, 162, 235, 1)', // Цвет рамки столбцов синий
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        function createChartES(data, label, index) {
+            var canvas = document.getElementById('myChart' + index);
+            var ctx = canvas.getContext('2d');
+            return new Chart(ctx, {
+                type: 'bar', // Используем тип 'bar' для горизонтальных столбцов
+                data: {
+                    labels: Array.from({length: data.length}, (_, i) => 'ЭС за месяц ' + (i + 1)),
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)', // Цвет столбцов синий
+                        borderColor: 'rgba(54, 162, 235, 1)', // Цвет рамки столбцов синий
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        // Создаем графики для каждого показателя
+        createChartCC(cc_net_profit, 'Динамика изменений Скользящего Среднего для Прибыли', 1);
+        createChartES(ec_net_profit, 'Динамика изменений Экспоненциального Сглаживания для Прибыли', 2);
+        createChartCC(cc_profitability, 'Динамика изменений Скользящего Среднего для Рентабельности', 3);
+        createChartES(ec_profitability, 'Динамика изменений Экспоненциального Сглаживания для Рентабельности', 4);
+        createChartCC(cc_operating_expenses, 'Динамика изменений Скользящего Среднего для Операционных расходов', 5);
+        createChartES(ec_operating_expenses, 'Динамика изменений Экспоненциального Сглаживания для Операционных расходов', 6);
+        createChartCC(cc_customer_base, 'Динамика изменений Скользящего Среднего для Клиентской базы', 7);
+        createChartES(ec_customer_base, 'Динамика изменений Экспоненциального Сглаживания для Клиентской базы', 8);
+        createChartCC(cc_employee_count, 'Динамика изменений Скользящего Среднего для Количества сотрудников', 9);
+        createChartES(ec_employee_count, 'Динамика изменений Экспоненциального Сглаживания для Количества сотрудников', 10);
+    });
+</script>
+
+</body>
+</html>
+
+
