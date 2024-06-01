@@ -1,0 +1,53 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Month</title>
+    <link rel="stylesheet" href="{% static 'css/all_style.css' %}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var slider = document.getElementById('id_seasonal_level');
+            var output = document.getElementById('seasonal_level_value');
+            output.innerHTML = slider.value; // Display the default slider value
+
+            slider.oninput = function() {
+                output.innerHTML = this.value;
+            }
+        });
+    </script>
+</head>
+<body>
+    <h2>Создание нового прогноза</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <b>{{ form.month.label_tag }} {{ form.month }}</b>
+        </div>
+        <div>
+            <b>{{ form.period_month.label_tag }} {{ form.period_month }}</b>
+        </div>
+        <div>
+            <b>{{ form.seasonal_level.label_tag }}</b>
+            <p>Переместите ползунок для выбора уровня сезонности от <span><b>0.1</b></span> [низкая зависимость от сезона] до <span><b>0.9</b></span> [высокая зависимость от сезона]</p>
+            <output id="seasonal_level_value" for="id_seasonal_level" style="margin-left: 10px; font-weight: bold;"></output>
+            {{ form.seasonal_level }}
+        </div>
+        <div>
+            <b>{{ form.artefact.label_tag }} {{ form.artefact }}</b>
+        </div>
+        <button type="submit">Продолжить</button>
+    </form>
+    <h2>Предыдущие прогнозы</h2>
+    <ul>
+        {% for result in results %}
+            <li>
+                <a href="{% url 'result_view' result.id %}">
+                    Данные за {{ result.forecast_data.period_month }} мес. - <b><span style="color:blue;">Эффективность:</span></b> {{ result.success_probability }}%
+                </a>
+            </li>
+        {% empty %}
+            <li>No forecasts have been made yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

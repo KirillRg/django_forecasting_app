@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Прогнозирование</title>
+    <link rel="stylesheet" href="{% static 'css/all_style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <button onclick="window.history.back();">Вернуться назад</button>
+    <h1>Ввод данных для прогноза</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div id="input-fields"></div>
+        <button type="submit">Сформировать прогноз</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            var periodMonth = {{ period_month }};
+
+            for (var i = 1; i <= periodMonth; i++) {
+                $('#input-fields').append(`
+                    <h3>Месяц ${i}</h3>
+                    <input type="text" name="net_profit_${i}" placeholder="Чистая прибыль за месяц ${i}" required>
+                    <input type="text" name="profitability_${i}" placeholder="Рентабельность за месяц ${i}" required>
+                    <input type="text" name="operating_expenses_${i}" placeholder="Операционные расходы за месяц ${i}" required>
+                    <input type="text" name="customer_base_${i}" placeholder="Клиентская база за месяц ${i}" required>
+                    <input type="text" name="employee_count_${i}" placeholder="Количество сотрудников за месяц ${i}" required>
+                `);
+            }
+        });
+    </script>
+</body>
+</html>
